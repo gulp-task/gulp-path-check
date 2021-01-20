@@ -6,6 +6,7 @@ var path = require('path');
 
 module.exports = function(options) {
 	var root = options && options.imgPath ? options.imgPath : process.cwd();
+	var ignoreLists = options && options.ignoreFiles ? options.ignoreFiles : [];
 	var urlLists = [];
 	var imgPathArr = root.split('/');
 	var imgCheckPath = '';
@@ -19,7 +20,6 @@ module.exports = function(options) {
 			imgCheckPath += ele + '\\/'
 		}
 	})
-
 
 	if (/\.\//.test(root) || /\.\.\//.test(root)) {
 		root = path.join(process.cwd(), root);
@@ -48,8 +48,12 @@ module.exports = function(options) {
 			var css = file.contents.toString(),
 				filePath = file.path;
 
-			if (/\.css$/.test(filePath)) {
-				convertUrls(css);
+			fileName = filePath.split('scss/')[1];
+
+			if (!ignoreLists.includes(fileName)) {
+				if (/\.css$/.test(filePath)) {
+					convertUrls(css);
+				}
 			}
 
 			file.contents = new Buffer(css);
